@@ -25,8 +25,14 @@ namespace Archview.Api.Endpoints.Registration
             try
             {
                 var graph = await _graphFactory.CreateAsync();
-                await graph.Cypher.Create("(r:Service $service)")
-                    .WithParam("service", registration.Service)
+                await graph.Cypher.Merge("(service:Service { Id: $id })")
+                    .OnCreate()
+                    .Set("service = $service")
+                    .WithParams(new
+                    {
+                        id = registration.Service.Id,
+                        service = registration.Service
+                    })
                     .ExecuteWithoutResultsAsync();
             }
             catch (System.Exception ex)
