@@ -1,17 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Neo4j.Driver;
+using Neo4jClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Archview.Api
 {
@@ -27,6 +22,9 @@ namespace Archview.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+            .AddSingleton<NeoServerConfiguration>(context => NeoServerConfiguration.GetConfigurationAsync(new Uri("http://neo4j:7474"), "neo4j", "neo4j").Result);
+            services.AddSingleton<IGraphClientFactory, GraphClientFactory>();
             services.AddSingleton<IDriver>(p => GraphDatabase.Driver("bolt://neo4j:7687", AuthTokens.Basic("neo4j", "neo4j")));
             services.AddControllers();
             services.AddSwaggerGen(c =>

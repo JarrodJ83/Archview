@@ -1,6 +1,7 @@
 ﻿using Archview.Model;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
+using Neo4jClient;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,27 +12,30 @@ namespace Archview.Api.Endpoints.Registration
     [ApiController]
     public class RegistrationController : ControllerBase
     {
-        private readonly IDriver _driver;
+        private readonly IGraphClientFactory _graphFactory;
 
-        public RegistrationController(IDriver driver)
+        public RegistrationController(IGraphClientFactory graphFactory)
         {
-            _driver = driver;
+            _graphFactory = graphFactory;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Register(Resource service)
+        public async Task<ActionResult> Register(ServiceRegistration registration)
         {
-            var statementText = new StringBuilder();
-            statementText.Append("CREATE (r:Resource { id:$id, name: $name})");
-            var statementParameters = new Dictionary<string, object>
+            try
             {
-                {"id", service.Id },
-                {"name", service.Name }
-            };
+                var graph = await _graphFactory.CreateAsync();
+                await graph.Cypher.Create("(r:Service $service)")
+                    .WithParam("service", registration.Service)
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (System.Exception ex)
+            {
 
-            var session = _driver.AsyncSession();
-            var result = await session.WriteTransactionAsync(tx => tx.RunAsync(statementText.ToString(), statementParameters));
-            return StatusCode(201, $"Node {result}");
+                throw;
+            }
+            
+            return Ok();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Archview
 {
-    public record ServiceRegistration(Resource Service, IEnumerable<Resource> Dependencies)
+    public record ServiceRegistration(Service Service, IEnumerable<Dependency> Dependencies)
     {
     }
 }
