@@ -8,5 +8,7 @@ namespace Archview
     {
         public Resource Service { get; init; }
         public List<Dependency> Dependencies { get; init; } = new List<Dependency>();
+        public List<Topic> PublishesToTopics { get; init; } = new List<Topic>();
+        public List<Topic> ConsumesFromTopics { get; init; } = new List<Topic>();
     }
 }
