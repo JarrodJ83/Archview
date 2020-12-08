@@ -25,6 +25,7 @@ namespace Archview.Api.Endpoints.Registration
             try
             {
                 var graph = await _graphFactory.CreateAsync();
+
                 await graph.Cypher.Merge("(service:Service { Id: $id })")
                     .OnCreate()
                     .Set("service = $service")
@@ -34,6 +35,17 @@ namespace Archview.Api.Endpoints.Registration
                         service = registration.Service
                     })
                     .ExecuteWithoutResultsAsync();
+
+                foreach (var resource in registration.Dependencies)
+                {
+                    var qry = graph.Cypher
+                        .Match("(svc:Service)", "(dependency:Service)")
+                        .Where((Resource svc) => svc.Id == registration.Service.Id)
+                        .AndWhere((Resource dependency) => dependency.Id == resource.ResourceId)
+                        .Merge("(svc)-[:DEPENDS_ON { DependencyType: $dep.DependencyType, CommunicationStyle: $dep.CommunicationStyle }]->(dependency)").WithParam("dep", resource);
+
+                    await qry.ExecuteWithoutResultsAsync();
+                }
             }
             catch (System.Exception ex)
             {
