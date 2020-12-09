@@ -1,6 +1,18 @@
 ﻿namespace Archview.Model
 {
-    public record Resource(string Id, string Name, ResourceType ResourceType);
+    public record Resource
+    {
+        public string Id { get; init; }
+        public string Name { get; init; }
+        public ResourceType ResourceType { get; init; }
+        public string Domain { get; init; }
+
+        public Resource() 
+        { 
+        }
+
+
+    }
     public enum ResourceType
     {
         API,
