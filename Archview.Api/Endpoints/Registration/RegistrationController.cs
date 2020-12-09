@@ -56,7 +56,8 @@ namespace Archview.Api.Endpoints.Registration
                     var qry = graph.Cypher
                         .Match("(svc:Service)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
-                        .Merge(@"(svc)-[:PUBLISHES_TO]->(t:Topic {name: $topicName})")                     
+                        .Merge("(t:Topic {name: $topicName})")
+                        .Merge(@"(svc)-[:PUBLISHES_TO]->(t)")                     
                         .WithParams(new
                         {
                             topicName = topic.Name
@@ -70,7 +71,8 @@ namespace Archview.Api.Endpoints.Registration
                     var qry = graph.Cypher
                         .Match("(svc:Service)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
-                        .Merge(@"(svc)-[:CONSUMES_FROM]->(t:Topic{name: $topicName})")
+                        .Merge("(t:Topic {name: $topicName})")
+                        .Merge(@"(svc)-[:CONSUMES_FROM]->(t)")
                         .WithParams(new
                         {
                             topicName = topic.Name
