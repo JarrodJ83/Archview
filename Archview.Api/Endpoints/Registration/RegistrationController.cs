@@ -28,7 +28,7 @@ namespace Archview.Api.Endpoints.Registration
                     .Where((Resource svc) => svc.Id == registration.Service.Id)
                     .Set("svc = $service")
                     .WithParams(new { service = registration.Service })
-                    .Return<Resource?>("svc")
+                    .Return<Resource>("svc")
                     .ResultsAsync).ToList();
 
                 if(!result.Any())
