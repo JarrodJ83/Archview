@@ -33,7 +33,7 @@ namespace Archview.Api.Endpoints.Registration
                     var qry = graph.Cypher
                         .Match("(svc)", "(dependency)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
-                        .AndWhere((Resource dependency) => dependency.Id == resource.ResourceId)
+                        .AndWhere((Resource dependency) => dependency.Id == resource.Id)
                         .Merge(@"(svc)-[:DEPENDS_ON 
                                 { 
                                     DependencyType: $dep.DependencyType, 

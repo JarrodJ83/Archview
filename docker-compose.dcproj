@@ -4,8 +4,9 @@
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>636a411b-1d6a-426f-b563-9f83f4f9ceff</ProjectGuid>
-    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/weatherforecast</DockerServiceUrl>
+    <DockerLaunchAction>None</DockerLaunchAction>
+    <DockerServiceUrl>
+    </DockerServiceUrl>
     <DockerServiceName>archview.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

@@ -2,5 +2,6 @@
 {
     public record Service : Resource
     {
+        public string Domain { get; set; }
     }
 }

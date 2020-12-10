@@ -1,6 +1,6 @@
 ﻿namespace Archview.Model
 {
-    public record Dependency(string ResourceId, DependencyType DependencyType, CommunicationStyle CommunicationStyle);
+    public record Dependency(string Id, DependencyType DependencyType, CommunicationStyle CommunicationStyle);
 
     public enum DependencyType
     {
