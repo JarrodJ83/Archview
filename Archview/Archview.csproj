@@ -8,4 +8,8 @@
     <PackageReference Include="neo4jclient" Version="4.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Requests\" />
+  </ItemGroup>
+
 </Project>
