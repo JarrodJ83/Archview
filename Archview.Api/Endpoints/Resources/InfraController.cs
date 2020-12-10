@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Archview.Api.Endpoints.Registration
 {
-    [Route("api/[controller]")]
+    [Route("api/Resources/[controller]")]
     [ApiController]
     public class InfraController : ControllerBase
     {

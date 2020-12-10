@@ -1,4 +1,6 @@
 ﻿namespace Archview.Model.Resources
 {
-    public record Service : Resource;
+    public record Service : Resource
+    {
+    }
 }

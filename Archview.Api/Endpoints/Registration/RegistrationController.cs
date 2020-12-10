@@ -11,11 +11,13 @@ namespace Archview.Api.Endpoints.Registration
     public class RegistrationController : ControllerBase
     {
         private readonly IGraphClientFactory _graphFactory;
+        private readonly NodeCreator _nodeCreator;
 
         public RegistrationController(IGraphClientFactory graphFactory)
         {
             _graphFactory = graphFactory;
-        }
+            _nodeCreator = new NodeCreator(graphFactory);
+        } 
 
         [HttpPost]
         public async Task<ActionResult> Register(ServiceRegistration registration)
@@ -24,25 +26,12 @@ namespace Archview.Api.Endpoints.Registration
             {
                 var graph = await _graphFactory.CreateAsync();
 
-                var result = (await graph.Cypher.Match("(svc:Service)")
-                    .Where((Resource svc) => svc.Id == registration.Service.Id)
-                    .Set("svc = $service")
-                    .WithParams(new { service = registration.Service })
-                    .Return<Resource>("svc")
-                    .ResultsAsync).ToList();
-
-                if(!result.Any())
-                {
-                    await graph.Cypher.Create("(svc:Service)")
-                    .Set("svc = $service")
-                    .WithParams(new { service = registration.Service })
-                    .ExecuteWithoutResultsAsync();
-                }
+                await _nodeCreator.CreateOrUpdate(registration.Service);
 
                 foreach (var resource in registration.Dependencies)
                 {
                     var qry = graph.Cypher
-                        .Match("(svc:Service)", "(dependency:Service)")
+                        .Match("(svc)", "(dependency)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
                         .AndWhere((Resource dependency) => dependency.Id == resource.ResourceId)
                         .Merge(@"(svc)-[:DEPENDS_ON 
@@ -56,14 +45,16 @@ namespace Archview.Api.Endpoints.Registration
 
                 foreach (var topic in registration.PublishesToTopics)
                 {
+                    await _nodeCreator.CreateOrUpdate(topic);
+
                     var qry = graph.Cypher
                         .Match("(svc:Service)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
-                        .Merge("(t:Topic {name: $topicName})")
+                        .Merge("(t:Topic {Id: $id})")
                         .Merge(@"(svc)-[:PUBLISHES_TO]->(t)")                     
                         .WithParams(new
                         {
-                            topicName = topic.Name
+                            id = topic.Id
                         });
 
                     await qry.ExecuteWithoutResultsAsync();
@@ -71,14 +62,16 @@ namespace Archview.Api.Endpoints.Registration
 
                 foreach (var topic in registration.ConsumesFromTopics)
                 {
+                    await _nodeCreator.CreateOrUpdate(topic);
+
                     var qry = graph.Cypher
                         .Match("(svc:Service)")
                         .Where((Resource svc) => svc.Id == registration.Service.Id)
-                        .Merge("(t:Topic {name: $topicName})")
+                        .Merge("(t:Topic {Id: $id})")
                         .Merge(@"(svc)-[:CONSUMES_FROM]->(t)")
                         .WithParams(new
                         {
-                            topicName = topic.Name
+                            id = topic.Id
                         });
 
                     await qry.ExecuteWithoutResultsAsync();
